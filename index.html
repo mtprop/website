@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MT Fence and Decking Solutions</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        background-color: #033249;
+        color: #efede8;
+        overflow: hidden;
+        height: 100vh;
+      }
+
+      main {
+        height: 100vh;
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
+      }
+
+      section {
+        scroll-snap-align: start;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding: 48px 16px 40px 16px;
+        opacity: 0;
+        transition: opacity 1s ease-out;
+        display: flex;
+        align-items: center;
+      }
+
+      .cta,
+      .content {
+        justify-content: center;
+      }
+
+      section.visible {
+        opacity: 1;
+      }
+
+      .cta {
+        font-weight: bold;
+        font-size: 13vw;
+        line-height: 1.1;
+        text-align: left;
+        max-width: 100%;
+        padding: 2rem;
+      }
+
+      .content {
+        flex: 2;
+        padding: 1rem;
+      }
+
+      #home {
+        height: 100vh;
+        background: url("https://res.cloudinary.com/dsodgr1pu/image/upload/w_500/q_auto/f_auto/1.jpg")
+          center no-repeat;
+        background-size: auto 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        padding: 1rem;
+        opacity: 1;
+        transform: none;
+        scroll-snap-align: start;
+      }
+
+      .title {
+        backdrop-filter: blur(6px); /* blur only what's behind it */
+        -webkit-backdrop-filter: blur(6px); /* for Safari */
+      }
+
+      h1 {
+        margin: 0;
+        color: white;
+      }
+
+      h2,
+      h3 {
+        font-size: 1.2rem;
+        margin-top: 0;
+      }
+
+      #about ul {
+        padding-left: 1.2rem;
+      }
+
+      #gallery img {
+        width: 100%;
+        max-width: 100%;
+        cursor: pointer;
+        border-radius: 8px;
+      }
+
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      #testimonials-container {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        width: 100%;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 10px;
+      }
+
+      .testimonial {
+        background: #efede8;
+        display: flex;
+        color: #033249;
+        padding: 2rem;
+        font-size: 1.5rem;
+        border-radius: 12px;
+        position: relative;
+        scroll-snap-align: start;
+        min-height: 300px;
+        width: 100%;
+        flex-shrink: 0;
+        flex-direction: column;
+        box-sizing: border-box;
+      }
+
+      .testimonial strong {
+        text-align: right;
+        margin-top: auto;
+      }
+
+      .testimonial::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 20px;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid #efede8;
+      }
+
+      @media (min-width: 768px) {
+        #testimonials-container {
+          flex-wrap: wrap;
+          overflow: visible;
+        }
+        .testimonial {
+          min-width: unset;
+          flex: 1;
+          max-width: none;
+        }
+      }
+
+      #contact a,
+      #contact p {
+        color: #efede8;
+        font-size: 0.95rem;
+        margin: 0.25rem 0;
+      }
+
+      #gallery {
+        scroll-snap-align: start;
+        min-height: calc(100vh - 48px);
+        padding-top: 48px;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+      }
+
+      .modal img {
+        max-width: 90%;
+        max-height: 90%;
+      }
+
+      .menu-toggle {
+        display: none;
+      }
+
+      .menu-icon {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #033249;
+        color: #ff8038;
+        font-size: 38px;
+        font-weight: 100;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1001;
+        cursor: pointer;
+      }
+
+      .menu-icon::before {
+        height: 38px;
+        width: 38px;
+        background-image: url("public/logo.svg");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        content: "";
+      }
+
+      .menu-icon span {
+        display: none;
+      }
+
+      .menu-toggle:checked + .menu-icon::before {
+        background-image: none;
+        text-align: center;
+        content: "×";
+        margin-bottom: 12px;
+      }
+
+      .menu-overlay {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100vw;
+        height: 100vh;
+        background-color: #033249;
+        transition: right 0.4s ease;
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .menu-toggle:checked ~ .menu-overlay {
+        right: 0;
+      }
+
+      .nav-links {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        font-size: 30px;
+        width: 100%;
+      }
+
+      .nav-links li a {
+        padding: 0 2rem;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 600;
+        align-items: baseline;
+      }
+
+      .nav-links li a:after {
+        content: ">";
+        font-size: 42px;
+        font-weight: 100;
+        color: #ff8038;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+      }
+
+      .nav-links a:hover {
+        color: #ffcc00;
+      }
+
+      #about {
+        padding: 0;
+      }
+
+      #about img {
+        width: 100%;
+        height: auto;
+        max-height: 60vh;
+      }
+
+      #about p {
+        padding: 0 16px;
+      }
+
+      p {
+        text-align: justify;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <input type="checkbox" id="menu-toggle" class="menu-toggle" />
+
+      <label for="menu-toggle" class="menu-icon">
+        <span>Menu</span>
+      </label>
+
+      <div class="menu-overlay">
+        <div class="nav-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#testimonials">Testimonials</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </div>
+      </div>
+    </nav>
+    <main>
+      <section id="home" class="visible">
+        <div class="title">
+          <h1>MT Fence & Decking Solutions</h1>
+        </div>
+      </section>
+
+      <section class="cta">
+        Enhance your Edinburgh home with expert fencing and decking solutions
+      </section>
+      <section id="about">
+        <img
+          src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/16.jpg"
+          alt="Fencing and Decking"
+        />
+        <p>
+          Transform your outdoor space into something special with
+          <strong>MT Fence & Decking Solutions</strong>, Edinburgh's trusted
+          fencing and decking specialists.
+        </p>
+        <p>
+          Whether you’re looking for a secure, stylish fence to protect your
+          property or a stunning deck to relax and entertain on, we offer
+          high-quality, custom solutions designed to fit your needs and your
+          budget.
+        </p>
+      </section>
+      <section>
+        <p>
+          As a local Edinburgh company, we understand the unique requirements of
+          homes in this beautiful city, from traditional stone-built houses to
+          modern townhouses. Our experienced team works with you to create
+          durable, attractive outdoor spaces that stand the test of time—no
+          matter the Scottish weather.
+        </p>
+        <h3>Why Choose MT Fence & Decking Solutions?</h3>
+        <ul>
+          <li>
+            Local Expertise: Proudly serving Edinburgh and the surrounding
+            areas, we know the local climate and design preferences.
+          </li>
+          <li>
+            Custom Designs: From contemporary decks to traditional wooden
+            fences, we create tailored solutions to complement your home and
+            lifestyle.
+          </li>
+          <li>
+            Quality Materials: We use only the finest timber and composite
+            materials to ensure your fence or deck lasts for years.
+          </li>
+          <li>
+            Professional Installation: Our experienced team guarantees a perfect
+            installation every time, on schedule and on budget.
+          </li>
+        </ul>
+      </section>
+
+      <section class="cta">
+        Don’t let me tell you how great we are, see what our clients have to say
+      </section>
+      <section class="content" id="testimonials">
+        <div id="testimonials-container">
+          <div class="testimonial">
+            <i>"Great service, fast and professional!"</i>
+            <strong>- John M.</strong>
+          </div>
+          <div class="testimonial">
+            <i>"Our garden looks fantastic now. Thank you!"</i>
+            <strong>– Sarah L.</strong>
+          </div>
+          <div class="testimonial">
+            <i>"Top-notch materials and quality craftsmanship."</i>
+            <strong>– David T.</strong>
+          </div>
+        </div>
+      </section>
+
+      <section id="gallery">
+        <div class="gallery-grid">
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/2.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(2)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/3.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(3)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/4.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(4)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/8.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(8)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/9.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(9)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/7.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(7)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/5.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(5)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/6.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(6)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/10.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(10)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/15.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(15)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/12.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(12)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/13.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(13)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/14.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(14)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/11.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(11)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/17.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(17)"
+          />
+          <img
+            loading="lazy"
+            src="https://res.cloudinary.com/dsodgr1pu/image/upload/w_200/q_auto/f_auto/18.jpg"
+            alt="Gallery Image 1"
+            onclick="openModal(18)"
+          />
+        </div>
+      </section>
+
+      <section class="cta">Ready to upgrade your outdoor space?</section>
+      <section class="cta">
+        Get in touch with us today for a free consultation and see how we can
+        bring your vision to life
+      </section>
+      <section class="content" id="contact">
+        <p>Phone: 0131 555 1234</p>
+        <p>
+          Email:
+          <a href="mailto:info@mtfenceanddecking.co.uk"
+            >info@mtfenceanddecking.co.uk</a
+          >
+        </p>
+        <p>Facebook: <a href="#">MT Fence & Decking Solutions</a></p>
+      </section>
+    </main>
+
+    <div class="modal" id="imageModal" onclick="closeModal()">
+      <img id="modalImg" src="" alt="Expanded View" />
+    </div>
+
+    <script>
+      function openModal(src) {
+        document.getElementById(
+          "modalImg"
+        ).src = `https://res.cloudinary.com/dsodgr1pu/image/upload/w_${500}/q_auto/f_auto/${src}.jpeg`;
+        document.getElementById("imageModal").style.display = "flex";
+      }
+
+      function closeModal() {
+        document.getElementById("imageModal").style.display = "none";
+      }
+
+      const sections = document.querySelectorAll("section");
+      // Also fade in sections when visible (except #home which is always visible)
+      const sectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+
+      sections.forEach((section) => {
+        sectionObserver.observe(section);
+      });
+
+      document.querySelectorAll(".nav-links a").forEach((link) => {
+        link.addEventListener("click", () => {
+          document.getElementById("menu-toggle").checked = false;
+        });
+      });
+    </script>
+  </body>
+</html>
